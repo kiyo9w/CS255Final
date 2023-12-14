@@ -8,8 +8,9 @@ class ATM{
 private:
     string ID;
     int PIN;
-    double balance = 0;
-    string friendsAccount;
+    double balance;
+    string friendsAccount[10];
+    int friendNumber = 0;
 public:
     void setID(string ID_);
     string getID();
@@ -18,16 +19,16 @@ public:
     void setBalance(double Balance_);
     double getBalance();
     void setFriends(string Friend_);
-    string getFriends();
+    string* getFriends();
     int loginScreen(bool loginStatus);
     bool checkCredential(string IDread, int PINread);
     void createAccount();
     bool mainScreen();
     void accountInformation();
-    void withdrawMoney(double withdraw);
-//    void depositMoney();
+    void alterBalance(double change);
     void pauseScreen();
     void createFile(string IDcreate);
+    void writeNewBalance(double newBalance);
 };
 
 #endif //FINAL_ATM_H

@@ -95,20 +95,15 @@ void ATM::accountInformation(){
          "* Friends list's accounts: " << this->getFriends() << endl;
     this->pauseScreen();
 }
+
 void ATM::alterBalance(double change){
-    ofstream outputFile;
-    string dirID = "../resources/userID/" + this->getID() + ".txt";
-    outputFile.open(dirID, ios::in);
     if(this->getBalance() - change < 0){
         cout << "/Error! Not Enough Money!/ \n";
         this->pauseScreen();
         return;
     }
     double newBalance = this->getBalance() - change;
-    outputFile.seekp(7, std::ios::cur);
-    outputFile << newBalance;
-    outputFile << "    \n";
-    outputFile.close();
+    this->writeNewBalance(newBalance);
     cout << " === Successful, account " << this->getID();
     if(change < 0) cout << " added $" << change;
     else if(change >0) cout << " withdraw $" << -change;
@@ -123,5 +118,19 @@ void ATM::createFile(string readID){
     string dirID = "../resources/userID/" + readID + ".txt";
     ofstream outputFile(dirID);
     outputFile << this->getPIN() << " " << this->getBalance() << endl;
+    outputFile.close();
+}
+
+void ATM::writeNewBalance(double newBalance){
+    ofstream outputFile;
+    string dirID = "../userID/" + this->getID() + ".txt";
+    outputFile.open(dirID,std::ofstream::out | std::ofstream::trunc);
+    outputFile.close();
+    outputFile.open(dirID, ios::in);
+    outputFile << this->getPIN() << " ";
+    outputFile << newBalance << endl;
+    for(string* test1 = this->getFriends(); test1 - (this->getFriends()) < 10; test1++){
+        outputFile << *(test1) << endl;
+    }
     outputFile.close();
 }

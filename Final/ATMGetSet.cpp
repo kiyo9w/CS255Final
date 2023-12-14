@@ -30,9 +30,10 @@ double ATM::getBalance(){
 }
 
 void ATM::setFriends(string Friend_){
-    this->friendsAccount += " " + Friend_;
+    this->friendsAccount[this->friendNumber] = Friend_;
+    this->friendNumber++;
 }
 
-string ATM::getFriends(){
+string* ATM::getFriends(){
     return this->friendsAccount;
 }
