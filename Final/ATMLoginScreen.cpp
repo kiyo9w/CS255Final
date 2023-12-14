@@ -53,7 +53,7 @@ int ATM::loginScreen(bool loginStatus) {
 bool ATM::checkCredential(string readID, int readPIN) {
     ifstream inputFile;
     //get user's ID file from directory
-    string dirID = "../userID/" + readID + ".txt";
+    string dirID = "../resources/userID/" + readID + ".txt";
     // Open user's ID file, re-input if incorrect
     inputFile.open(dirID, ios::in);
     while (!inputFile.is_open()) {
@@ -62,7 +62,7 @@ bool ATM::checkCredential(string readID, int readPIN) {
         cin.clear();
         cin.ignore(10000,'\n');
         cin >> readID;
-        dirID = "../userID/" + readID + ".txt";
+        dirID = "../resources/userID/" + readID + ".txt";
         inputFile.open(dirID, ios::in);
     }
     setID(readID);

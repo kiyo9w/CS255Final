@@ -61,10 +61,20 @@ bool ATM::mainScreen(){
                             cin >> withdrawChoice;
                     }
                 }
-                this->withdrawMoney(money);
+                this->alterBalance(money);
                 break;
             }
             case 3: {
+                int moneyDepo;
+                cout << "Enter the amount:";
+                cin >> moneyDepo;
+                if(moneyDepo <= 0){
+                    cout << "/Invalid quantity. Please re-enter: / \n";
+                    cin.clear();
+                    cin.ignore(100000, '\n');
+                    cin >> moneyDepo;
+                }
+                alterBalance(-moneyDepo);
                 break;
             }
             case 4: {
@@ -85,27 +95,32 @@ void ATM::accountInformation(){
          "* Friends list's accounts: " << this->getFriends() << endl;
     this->pauseScreen();
 }
-void ATM::withdrawMoney(double withdraw){
+void ATM::alterBalance(double change){
     ofstream outputFile;
-    string dirID = "../userID/" + this->getID() + ".txt";
+    string dirID = "../resources/userID/" + this->getID() + ".txt";
     outputFile.open(dirID, ios::in);
-    if(this->getBalance() - withdraw < 0){
+    if(this->getBalance() - change < 0){
         cout << "/Error! Not Enough Money!/ \n";
         this->pauseScreen();
         return;
-        }
-    double newBalance = this->getBalance() - withdraw;
+    }
+    double newBalance = this->getBalance() - change;
     outputFile.seekp(7, std::ios::cur);
     outputFile << newBalance;
+    outputFile << "    \n";
     outputFile.close();
-    cout << " === Successfully withdrawn $" << withdraw << "! === \n";
+    cout << " === Successful, account " << this->getID();
+    if(change < 0) cout << " added $" << change;
+    else if(change >0) cout << " withdraw $" << -change;
+    cout << "! === \n ";
     this->checkCredential(this->getID(), this->getPIN());
+    cout << "* Remaining balance: $" << this->getBalance() << "\n";
     this->pauseScreen();
 }
-//void ATM::depositMoney();
+
 
 void ATM::createFile(string readID){
-    string dirID = "../userID/" + readID + ".txt";
+    string dirID = "../resources/userID/" + readID + ".txt";
     ofstream outputFile(dirID);
     outputFile << this->getPIN() << " " << this->getBalance() << endl;
     outputFile.close();
