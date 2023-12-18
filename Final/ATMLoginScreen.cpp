@@ -3,9 +3,7 @@
 //
 #include <iostream>
 #include "header/ATM.h"
-#include <string>
 #include <fstream>
-#include <ctime>
 
 int ATM::loginScreen(bool loginStatus) {
     cout << "=== Welcome! === \n";
@@ -19,12 +17,9 @@ int ATM::loginScreen(bool loginStatus) {
             case 1: {
                 cout << " === Login === \n";
                 string IDlog;
-                int PINlog;
                 cout << "Enter your ID: ";
                 cin >> IDlog;
-                cout << "Enter your PIN number: ";
-                cin >> PINlog;
-                if(this->checkCredential(IDlog, PINlog)){
+                if(this->checkCredential(IDlog, true)){
                     cout << " === Successfully logged in! === \n";
                     loginStatus = this->mainScreen();
                 } else {this->loginScreen(true);}
@@ -50,10 +45,10 @@ int ATM::loginScreen(bool loginStatus) {
     return 0;
 }
 
-bool ATM::checkCredential(string readID, int readPIN) {
+bool ATM::checkCredential(string readID, bool needPIN) {
     ifstream inputFile;
     //get user's ID file from directory
-    string dirID = "../userID/" + readID + ".txt";
+    string dirID = "../resources/userID/" + readID + ".txt";
     // Open user's ID file, re-input if incorrect
     inputFile.open(dirID, ios::in);
     while (!inputFile.is_open()) {
@@ -62,7 +57,7 @@ bool ATM::checkCredential(string readID, int readPIN) {
         cin.clear();
         cin.ignore(10000,'\n');
         cin >> readID;
-        dirID = "../userID/" + readID + ".txt";
+        dirID = "../resources/userID/" + readID + ".txt";
         inputFile.open(dirID, ios::in);
     }
     setID(readID);
@@ -72,27 +67,28 @@ bool ATM::checkCredential(string readID, int readPIN) {
     //read first line consist of PIN + balance
     inputFile >> filePIN >> fileBalance;
     // Check if user PIN is correct, if wrong re-ask
-    while(true) {
-        if (readPIN == filePIN) {
+    if(needPIN) {
+        cout << "Enter your PIN number: ";
+        int readPIN;
+        cin >> readPIN;
+        while (readPIN != filePIN) {
             //assign PIN, balance, friendList to running ATM
-            this->setPIN(filePIN);
-            this->setBalance(fileBalance);
-            this->setFriendNumber(0);
-            while (inputFile >> idFriend) {
-                this->setFriends(idFriend);
-            }
-            inputFile.close();
-            return true;
-        } else {
-            cout << "/Incorrect PIN, please re-enter: /\n" <<
-                 "Enter your PIN number: ";
+            cout << "/Incorrect PIN, please re-enter: /\n";
             cin.clear();
-            cin.ignore(10000,'\n');
-            if(count == 5) return false;
+            cin.ignore(10000, '\n');
+            if (count == 5) return false;
             cin >> readPIN;
             count++;
         }
     }
+    this->setPIN(filePIN);
+    this->setBalance(fileBalance);
+    this->setFriendNumber(0);
+    while (inputFile >> idFriend) {
+        this->setFriends(idFriend);
+    }
+    inputFile.close();
+    return true;
 }
 
 void ATM::createAccount(){

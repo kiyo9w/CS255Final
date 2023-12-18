@@ -3,7 +3,6 @@
 //
 #include <iostream>
 #include "header/ATM.h"
-#include <string>
 #include <fstream>
 
 bool ATM::mainScreen(){
@@ -90,11 +89,15 @@ bool ATM::mainScreen(){
 }
 
 void ATM::accountInformation(){
-    this->checkCredential(this->getID(), this->getPIN());
+    this->checkCredential(this->getID(), false);
     cout << " === Account Information === \n"
             "* ID: " << this->getID() << endl <<
          "* Balance: " << "$" << setprecision(10) << this->getBalance() << endl <<
-         "* Friends list's accounts: " << this->getFriends() << endl;
+         "* Friends list's accounts: " ;
+            for(string* i = this->getFriends(); i - this->getFriends() < 10; i++){
+                cout << *i << " ";
+            }
+    cout << "\n";
     this->pauseScreen();
 }
 
@@ -113,7 +116,7 @@ void ATM::transaction(double change) {
     else if(change >0) cout << " withdrawn -$" << change;
     cout << "! === \n ";
     //update new values to ATM
-    this->checkCredential(this->getID(), this->getPIN());
+    this->checkCredential(this->getID(), false);
     cout << "* Remaining balance: $" << this->getBalance() << "\n";
     this->pauseScreen();
 }
@@ -146,24 +149,10 @@ void ATM::createFile(string IDread){
 
 
 void ATM::writeNewBalance(string IDread, double newBalance) {
-    ifstream inputFile;
     ofstream outputFile;
     string dirID = "../resources/userID/" + IDread + ".txt";
     //update the user's info to current ATM
-    inputFile.open(dirID,std::ofstream::in);
-    while (!inputFile.is_open()) {
-        cout << "/Error can't find ID, please re-enter!/" << endl <<
-             "Enter your ID: ";
-        cin.clear();
-        cin.ignore(10000,'\n');
-        cin >> IDread;
-        dirID = "../resources/userID/" + IDread + ".txt";
-        inputFile.open(dirID, ios::in);
-    }
-    int PINread;
-    inputFile >> PINread;
-    this->checkCredential(IDread, PIN);
-    inputFile.close();
+    this->checkCredential(IDread, false);
     //clear file's content
     outputFile.open(dirID,std::ofstream::out | std::ofstream::trunc);
     outputFile.close();

@@ -22,7 +22,7 @@ public:
     void setFriendNumber(int FriendNumber_);
     string* getFriends();
     int loginScreen(bool loginStatus);
-    bool checkCredential(string IDread, int PINread);
+    bool checkCredential(string IDread, bool needPIN);
     void createAccount();
     bool mainScreen();
     void accountInformation();
