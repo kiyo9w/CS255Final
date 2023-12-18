@@ -26,7 +26,7 @@ int ATM::loginScreen(bool loginStatus) {
                 cin >> PINlog;
                 if(this->checkCredential(IDlog, PINlog)){
                     cout << " === Successfully logged in! === \n";
-                    this->mainScreen();
+                    loginStatus = this->mainScreen();
                 } else {this->loginScreen(true);}
                 break;
             }
@@ -77,6 +77,7 @@ bool ATM::checkCredential(string readID, int readPIN) {
             //assign PIN, balance, friendList to running ATM
             this->setPIN(filePIN);
             this->setBalance(fileBalance);
+            this->setFriendNumber(0);
             while (inputFile >> idFriend) {
                 this->setFriends(idFriend);
             }

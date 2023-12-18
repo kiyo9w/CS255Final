@@ -19,16 +19,18 @@ public:
     void setBalance(double Balance_);
     double getBalance();
     void setFriends(string Friend_);
+    void setFriendNumber(int FriendNumber_);
     string* getFriends();
     int loginScreen(bool loginStatus);
     bool checkCredential(string IDread, int PINread);
     void createAccount();
     bool mainScreen();
     void accountInformation();
-    void alterBalance(double change);
+    void transaction(double change);
     void pauseScreen();
-    void createFile(string IDcreate);
-    void writeNewBalance(double newBalance);
+    void createFile(string IDread);
+    void writeNewBalance(string IDread, double newBalance);
+    void transferMoney();
 };
 
 #endif //FINAL_ATM_H

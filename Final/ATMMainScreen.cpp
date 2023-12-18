@@ -47,7 +47,7 @@ bool ATM::mainScreen(){
                         case 5:
                             cout << "Enter the amount:";
                             cin >> money;
-                            if(money <= 0){
+                            while(money <= 0){
                                 cout << "/Invalid quantity. Please re-enter: / \n";
                                 cin.clear();
                                 cin.ignore(100000, '\n');
@@ -61,23 +61,24 @@ bool ATM::mainScreen(){
                             cin >> withdrawChoice;
                     }
                 }
-                this->alterBalance(money);
+                this->transaction(money);
                 break;
             }
             case 3: {
                 int moneyDepo;
                 cout << "Enter the amount:";
                 cin >> moneyDepo;
-                if(moneyDepo <= 0){
+                while(moneyDepo <= 0){
                     cout << "/Invalid quantity. Please re-enter: / \n";
                     cin.clear();
                     cin.ignore(100000, '\n');
                     cin >> moneyDepo;
                 }
-                alterBalance(-moneyDepo);
+                this->transaction(-moneyDepo);
                 break;
             }
             case 4: {
+                this->transferMoney();
                 break;
             }
             case 5: {
@@ -89,6 +90,7 @@ bool ATM::mainScreen(){
 }
 
 void ATM::accountInformation(){
+    this->checkCredential(this->getID(), this->getPIN());
     cout << " === Account Information === \n"
             "* ID: " << this->getID() << endl <<
          "* Balance: " << "$" << setprecision(10) << this->getBalance() << endl <<
@@ -96,39 +98,79 @@ void ATM::accountInformation(){
     this->pauseScreen();
 }
 
-void ATM::alterBalance(double change){
+void ATM::transaction(double change) {
+    //check if the balance is enough for a withdraw
     if(this->getBalance() - change < 0){
         cout << "/Error! Not Enough Money!/ \n";
         this->pauseScreen();
         return;
     }
-    double newBalance = this->getBalance() - change;
-    this->writeNewBalance(newBalance);
+    //make change to balance
+    this->writeNewBalance(this->getID(), change);
+    //print transaction message
     cout << " === Successful, account " << this->getID();
-    if(change < 0) cout << " added $" << change;
-    else if(change >0) cout << " withdraw $" << -change;
+    if(change < 0) cout << " deposited $" << -change;
+    else if(change >0) cout << " withdrawn -$" << change;
     cout << "! === \n ";
+    //update new values to ATM
     this->checkCredential(this->getID(), this->getPIN());
     cout << "* Remaining balance: $" << this->getBalance() << "\n";
     this->pauseScreen();
 }
 
+void ATM::transferMoney(){
+    cout << " === Enter userID to transfer money to: === " << endl;
+    string transferID;
+    cin >> transferID;
+    cout << "*Enter the money to transfer: " ;
+    int change;
+    cin >> change;
+    if(this->getBalance() - change < 0){
+        cout << "/Error! Not Enough Money!/ \n";
+        this->pauseScreen();
+        return;
+    }
+    string tracebackID = this->getID();
+    writeNewBalance(transferID, -change);
+    writeNewBalance(tracebackID, change);
+    cout << " === Successfully transfer $" << change << " to ID: " << transferID << " === \n";
+}
 
-void ATM::createFile(string readID){
-    string dirID = "../resources/userID/" + readID + ".txt";
+
+void ATM::createFile(string IDread){
+    string dirID = "../resources/userID/" + IDread + ".txt";
     ofstream outputFile(dirID);
     outputFile << this->getPIN() << " " << this->getBalance() << endl;
     outputFile.close();
 }
 
-void ATM::writeNewBalance(double newBalance){
+
+void ATM::writeNewBalance(string IDread, double newBalance) {
+    ifstream inputFile;
     ofstream outputFile;
-    string dirID = "../userID/" + this->getID() + ".txt";
+    string dirID = "../resources/userID/" + IDread + ".txt";
+    //update the user's info to current ATM
+    inputFile.open(dirID,std::ofstream::in);
+    while (!inputFile.is_open()) {
+        cout << "/Error can't find ID, please re-enter!/" << endl <<
+             "Enter your ID: ";
+        cin.clear();
+        cin.ignore(10000,'\n');
+        cin >> IDread;
+        dirID = "../resources/userID/" + IDread + ".txt";
+        inputFile.open(dirID, ios::in);
+    }
+    int PINread;
+    inputFile >> PINread;
+    this->checkCredential(IDread, PIN);
+    inputFile.close();
+    //clear file's content
     outputFile.open(dirID,std::ofstream::out | std::ofstream::trunc);
     outputFile.close();
+    //input in new content for the file
     outputFile.open(dirID, ios::in);
     outputFile << this->getPIN() << " ";
-    outputFile << newBalance << endl;
+    outputFile << this->getBalance() - newBalance << endl;
     for(string* test1 = this->getFriends(); test1 - (this->getFriends()) < 10; test1++){
         outputFile << *(test1) << endl;
     }

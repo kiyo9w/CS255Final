@@ -34,6 +34,10 @@ void ATM::setFriends(string Friend_){
     this->friendNumber++;
 }
 
+void ATM::setFriendNumber(int FriendNumber_){
+    this->friendNumber = FriendNumber_;
+}
+
 string* ATM::getFriends(){
     return this->friendsAccount;
 }
