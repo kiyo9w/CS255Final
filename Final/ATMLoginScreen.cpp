@@ -49,7 +49,7 @@ bool ATM::checkCredential(string readID, bool needPIN) {
     ifstream inputFile;
     //get user's ID file from directory
     string dirID = "../resources/userID/" + readID + ".txt";
-    // Open user's ID file, re-input if incorrect
+    // Open user's ID file, re-input if it can't be found
     inputFile.open(dirID, ios::in);
     while (!inputFile.is_open()) {
         cout << "/Error can't find ID, please re-enter!/" << endl <<

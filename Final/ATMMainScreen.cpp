@@ -92,8 +92,8 @@ void ATM::accountInformation(){
     this->checkCredential(this->getID(), false);
     cout << " === Account Information === \n"
             "* ID: " << this->getID() << endl <<
-         "* Balance: " << "$" << setprecision(10) << this->getBalance() << endl <<
-         "* Friends list's accounts: " ;
+            "* Balance: " << "$" << setprecision(10) << this->getBalance() << endl <<
+            "* Friends list's accounts: " ;
             for(string* i = this->getFriends(); i - this->getFriends() < 10; i++){
                 cout << *i << " ";
             }
@@ -102,7 +102,7 @@ void ATM::accountInformation(){
 }
 
 void ATM::transaction(double change) {
-    //check if the balance is enough for a withdraw
+    //check if the balance is enough for a withdrawal
     if(this->getBalance() - change < 0){
         cout << "/Error! Not Enough Money!/ \n";
         this->pauseScreen();
@@ -122,21 +122,33 @@ void ATM::transaction(double change) {
 }
 
 void ATM::transferMoney(){
+    //use to change ATM's data back to user 1
+    string tracebackID = this->getID();
+    //get destined user's id and money
     cout << " === Enter userID to transfer money to: === " << endl;
     string transferID;
     cin >> transferID;
     cout << "*Enter the money to transfer: " ;
     int change;
     cin >> change;
+    //input validation
+    while(change <= 0){
+        cout << "/Invalid quantity. Please re-enter: / \n";
+        cin.clear();
+        cin.ignore(100000, '\n');
+        cin >> change;
+    }
     if(this->getBalance() - change < 0){
         cout << "/Error! Not Enough Money!/ \n";
         this->pauseScreen();
         return;
     }
-    string tracebackID = this->getID();
+    //transfer positive change to user2
     writeNewBalance(transferID, -change);
+    cout << " === Successfully transfer $" << change << " to ID: " << this->getID() << " === \n";
+    //transfer negative change to user1
     writeNewBalance(tracebackID, change);
-    cout << " === Successfully transfer $" << change << " to ID: " << transferID << " === \n";
+    cout << "*Current balance: $" << this->getBalance() << endl;
 }
 
 
@@ -149,10 +161,10 @@ void ATM::createFile(string IDread){
 
 
 void ATM::writeNewBalance(string IDread, double newBalance) {
-    ofstream outputFile;
-    string dirID = "../resources/userID/" + IDread + ".txt";
-    //update the user's info to current ATM
+    //update ATM's info
     this->checkCredential(IDread, false);
+    ofstream outputFile;
+    string dirID = "../resources/userID/" + this->getID() + ".txt";
     //clear file's content
     outputFile.open(dirID,std::ofstream::out | std::ofstream::trunc);
     outputFile.close();
