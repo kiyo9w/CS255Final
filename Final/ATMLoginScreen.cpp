@@ -84,6 +84,7 @@ bool ATM::checkCredential(string readID, bool needPIN) {
     this->setPIN(filePIN);
     this->setBalance(fileBalance);
     this->setFriendNumber(0);
+    fill_n(this->getFriends(), 10, " ");
     while (inputFile >> idFriend) {
         this->setFriends(idFriend);
     }
@@ -128,6 +129,13 @@ void ATM::createAccount(){
             cin >> newPIN;
         }
     }
+}
+
+void ATM::createFile(string IDread){
+    string dirID = "../resources/userID/" + IDread + ".txt";
+    ofstream outputFile(dirID);
+    outputFile << this->getPIN() << " " << this->getBalance() << endl;
+    outputFile.close();
 }
 
 void ATM::pauseScreen(){

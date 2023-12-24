@@ -30,7 +30,7 @@ public:
     void pauseScreen();
     void createFile(string IDread);
     void writeNewBalance(string IDread, double newBalance);
-    void transferMoney();
+    void transferMoney(string transferID, int change);
 };
 
 #endif //FINAL_ATM_H

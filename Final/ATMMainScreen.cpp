@@ -7,7 +7,8 @@
 
 bool ATM::mainScreen(){
     while(true) {
-        cout << "1. Account Information\n"
+        cout << " === Main screen === \n"
+                "1. Account Information\n"
                 "2. Withdraw money\n"
                 "3. Deposit money\n"
                 "4. Transfer money\n"
@@ -77,12 +78,36 @@ bool ATM::mainScreen(){
                 break;
             }
             case 4: {
-                this->transferMoney();
+                //print out user's friendlist
+                cout << "*Friend list: \n";
+                for(string* i = this->getFriends(); i - this->getFriends() < 10; i++){
+                    cout << *i << " ";
+                }
+                cout << "\n(You can also transfer money to people outside of your friendlist)\n";
+                //get destined user's id
+                cout << " === Enter userID to transfer money to: === " << endl;
+                string transferID;
+                cin >> transferID;
+                //input validation for self id entering
+                while(transferID == this->getID()){
+                    cout << "/Transferring money to yourself is not allowed! Re-enter: /\n";
+                    cin >> transferID;
+                }
+                cout << "*Enter the money to transfer: " ;
+                int change;
+                cin >> change;
+                this->transferMoney(transferID, change);
                 break;
             }
             case 5: {
                 cout << " === Successfully logged out === \n";
-                return false;
+                return true;
+            }
+            default: {
+                cout << "/Invalid input, please re-enter!/ \n";
+                cin.clear();
+                cin.ignore(100000, '\n');
+                break;
             }
         }
     }
@@ -121,17 +146,8 @@ void ATM::transaction(double change) {
     this->pauseScreen();
 }
 
-void ATM::transferMoney(){
-    //use to change ATM's data back to user 1
+void ATM::transferMoney(string transferID, int change) {
     string tracebackID = this->getID();
-    //get destined user's id and money
-    cout << " === Enter userID to transfer money to: === " << endl;
-    string transferID;
-    cin >> transferID;
-    cout << "*Enter the money to transfer: " ;
-    int change;
-    cin >> change;
-    //input validation
     while(change <= 0){
         cout << "/Invalid quantity. Please re-enter: / \n";
         cin.clear();
@@ -143,20 +159,12 @@ void ATM::transferMoney(){
         this->pauseScreen();
         return;
     }
-    //transfer positive change to user2
     writeNewBalance(transferID, -change);
     cout << " === Successfully transfer $" << change << " to ID: " << this->getID() << " === \n";
-    //transfer negative change to user1
     writeNewBalance(tracebackID, change);
+    checkCredential(tracebackID, false);
     cout << "*Current balance: $" << this->getBalance() << endl;
-}
-
-
-void ATM::createFile(string IDread){
-    string dirID = "../resources/userID/" + IDread + ".txt";
-    ofstream outputFile(dirID);
-    outputFile << this->getPIN() << " " << this->getBalance() << endl;
-    outputFile.close();
+    this->pauseScreen();
 }
 
 
